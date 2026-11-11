@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101116">
+  <script src="https://telegram.org/js/telegram-web-app.js?65"></script>
+  <title>CRYPTOROLL — Mining Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell mining-shell">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">₿</div><div><b>CRYPTOROLL</b><small>MINING SIMULATOR</small></div></div>
+    <div class="wallet"><span>$</span><b id="cashBalance">$2,500</b><small>USD</small></div>
+  </header>
+  <section class="top-status panel" aria-label="Уровень и показатели фермы">
+    <div class="top-status-level">
+      <div class="top-status-heading"><span>УРОВЕНЬ</span><strong id="topLevel">1</strong></div>
+      <div class="top-status-progress"><div id="topLevelProgressFill"></div></div>
+      <small id="topLevelProgressText">0 / 100 XP</small>
+    </div>
+    <div class="top-status-metric"><small>ПОТРЕБЛЕНИЕ / ДОСТУПНО</small><strong id="topConsumption">0 / 2,5 kW</strong></div>
+    <div class="top-status-metric"><small>ДОБЫЧА / СЕК</small><strong id="topMiningRate">0.000000 USDT</strong></div>
+  </section>
+  <section class="top-wallet panel" aria-label="Кошельки криптовалют">
+    <div class="top-wallet-title"><b>МОИ АКТИВЫ</b><small>Игровые балансы · курс обновляется</small></div>
+    <div class="top-wallet-grid">
+      <div><b>₮ USDT</b><strong id="topUSDT">0.000000</strong><small id="topRateUSDT">$1.000</small></div>
+      <div><b>◎ SOL</b><strong id="topSOL">0.000000</strong><small id="topRateSOL">$450.00</small></div>
+      <div><b>◆ ETH</b><strong id="topETH">0.000000</strong><small id="topRateETH">$65.00</small></div>
+      <div><b>₿ BTC</b><strong id="topBTC">0.000000</strong><small id="topRateBTC">$100.00</small></div>
+    </div>
+  </section>
+  <main>
+    <section class="page-view active" data-page="mine">
+      <section class="hero panel mining-hero">
+        <div class="eyebrow">ТВОЯ МАЙНИНГ-ФЕРМА</div>
+        <h1>Добывай больше.<br><em>Развивай ферму.</em></h1>
+        <p>Фермы автоматически добывают криптовалюту. Обменивай её на игровые доллары.</p>
+        <div hidden aria-hidden="true">
+          <span id="level">1</span><span id="power">1.0 TH/s</span><span id="rigCount">0</span>
+        </div>
+      </section>
+      <section class="panel mining-console">
+        <div class="section-head"><div><small class="eyebrow">MINING CORE</small><h2>Панель добычи</h2></div><span class="live-dot">ONLINE</span></div>
+        <div class="currency-switch" id="currencySwitch">
+          <button class="currency-tab" data-currency="USDT">₮ Tether</button>
+          <button class="currency-tab" data-currency="SOL">◎ Solana</button>
+          <button class="currency-tab" data-currency="ETH">◆ Ethereum</button>
+          <button class="currency-tab active" data-currency="BTC">₿ Bitcoin</button>
+        </div>
+        <div class="coin-display">
+          <div class="coin-orbit"><div class="coin">₿</div></div>
+          <div><small id="coinBalanceLabel">ТВОЙ БАЛАНС BTC</small><strong id="coinBalance">0.000000</strong><span id="rate">0.000001 BTC / сек</span></div>
+        </div>
+        <div class="mining-progress"><div id="progressFill"></div></div>
+        <div class="mining-actions mining-actions-single">
+          <button class="primary-btn" id="collectBtn">Забрать добытое <b id="pending">0.000000</b></button>
+        </div>
+        <p class="hint" id="mineHint">Ручной майнинг отключён. Добыча идёт автоматически, пока оборудование обеспечено энергией.</p>
+      </section>
+
+    
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">EXCHANGE</small><h2>Обменник</h2></div><span class="live-dot">DEMO RATE</span></div>
+        <div class="currency-switch" id="exchangeSwitch">
+          <button class="currency-tab" data-exchange-currency="USDT">₮ USDT</button>
+          <button class="currency-tab" data-exchange-currency="SOL">◎ SOL</button>
+          <button class="currency-tab" data-exchange-currency="ETH">◆ ETH</button>
+          <button class="currency-tab active" data-exchange-currency="BTC">₿ BTC</button>
+        </div>
+        <div class="exchange-rate"><small>ВНУТРИИГРОВОЙ КУРС</small><b id="exchangeRate">1 BTC = $100</b><span>Условные игровые курсы, не рыночные котировки.</span></div>
+        <div class="market-chart-panel"><div class="chart-head"><div><small class="eyebrow">LIVE MARKET</small><b>Динамика курса</b></div><span class="live-dot">● LIVE · 5 СЕК</span></div><div class="chart-current" id="marketRateLabel">1 BTC = $100</div><div id="marketChart" class="market-chart"><div class="chart-empty">График формируется · обновление каждые 5 секунд</div></div></div>
+        <label class="field-label" for="sellAmount">Количество выбранной валюты</label>
+        <div class="sell-input-row"><input id="sellAmount" type="number" min="0" step="0.000001" value="0.000000" class="mining-input"><button class="secondary-btn max-btn" id="maxSellBtn" type="button">МАКС</button></div>
+        <button class="primary-btn" id="sellBtn">Обменять криптовалюту на доллары</button>
+        <p class="hint" id="exchangeHint">Игровой курс резко колеблется и обновляется каждые 5 секунд. Это симуляция рынка: вывода реальных денег и криптовалюты нет.</p>
+      </section>
+    
+    </section>
+
+    <section class="page-view" data-page="rigs">
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">HARDWARE</small><h2>Майнинг-фермы</h2></div><span class="pill" id="rigSlots">0 / 12</span></div>
+        <p class="muted">Покупай оборудование, чтобы увеличить автоматическую добычу.</p>
+        <div class="catalog-heading"><h3>Видеокарты и майнеры</h3><span>44 модели</span></div>
+        <div class="currency-switch equipment-switch" id="equipmentSwitch">
+          <button class="currency-tab" data-equipment-currency="USDT">₮ USDT</button>
+          <button class="currency-tab" data-equipment-currency="SOL">◎ SOL</button>
+          <button class="currency-tab" data-equipment-currency="ETH">◆ ETH</button>
+          <button class="currency-tab active" data-equipment-currency="BTC">₿ BTC</button>
+        </div>
+        <div id="rigShop" class="item-grid"></div>
+        <h3 class="subheading">Моё оборудование</h3>
+        <div id="myRigs" class="item-grid"></div>
+      </section>
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">POWER GRID</small><h2>Энергоснабжение фермы</h2></div><span class="pill" id="powerStatus">0 kW</span></div>
+        <p class="muted">Покупай источники энергии. Более мощные системы стоят дороже и позволяют запускать больше оборудования.</p>
+        <div id="powerShop" class="item-grid"></div>
+        <div class="power-summary" id="powerSummary"></div>
+      </section>
+    </section>
+
+    <section class="page-view" data-page="upgrades">
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">OPTIMIZATION & R&D</small><h2>Улучшения</h2></div><span class="pill">UPGRADES</span></div>
+        <p class="muted">Все улучшения оборудования и технологии прокачиваются за исследовательские очки RP. Получай RP за ежедневные задания.</p>
+        <div id="upgradeList" class="item-grid"></div>
+      </section>
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">DATA CENTER</small><h2>Дата-центры</h2></div><span class="pill" id="dcTier">ГАРАЖ</span></div>
+        <p class="muted">Расширяй инфраструктуру фермы: новые помещения увеличивают вместимость оборудования.</p>
+        <div id="datacenterList" class="item-grid"></div>
+      </section>
+    </section>
+
+    <section class="page-view" data-page="friends">
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">REFERRAL PROGRAM</small><h2>Приглашай друзей</h2></div><span class="pill">BETA</span></div>
+        <p class="muted">Поделись ссылкой. В локальном прототипе ссылка формируется для Telegram, а бонусы начисляются только в тестовом профиле этого устройства.</p>
+        <div class="referral-box"><b id="referralLink">Ссылка появится после открытия в Telegram</b><button class="secondary-btn" id="copyReferral">Копировать ссылку</button></div>
+        <div class="stats stats-wide"><div><small>ПРИГЛАШЕНО</small><b id="refCount">0</b></div><div><small>БОНУСЫ</small><b id="refRewards">$0</b></div></div>
+      </section>
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">CORPORATIONS</small><h2>Корпорации</h2></div><span class="pill">ПРЕВЬЮ</span></div>
+        <p class="muted">Будущие объединения игроков, совместные контракты и общий рейтинг. Пока доступен локальный макет.</p>
+        <div class="friends-placeholder"><div class="friends-icon">🏢</div><h3>Корпорации скоро появятся</h3><p>Для настоящих корпораций потребуется общий сервер и единая база игроков.</p></div>
+      </section>
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">PLAYER RANKINGS</small><h2>Рейтинг</h2></div><span class="pill">ЛОКАЛЬНО</span></div>
+        <div class="ranking-row"><span>Твой уровень</span><b id="rankLevel">1</b></div>
+        <div class="ranking-row"><span>Мощность фермы</span><b id="rankPower">0 TH/s</b></div>
+        <div class="ranking-row"><span>Стоимость активов</span><b id="rankWorth">$0</b></div>
+        <p class="hint">Глобальные рейтинги появятся после серверной синхронизации.</p>
+      </section>
+    </section>
+<section class="page-view" data-page="more">
+
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">ACTIVE GAMEPLAY</small><h2>Активные операции</h2></div><span class="pill">ИГРАЙ СЕЙЧАС</span></div>
+        <p class="muted">Не обязательно ждать добычу: отправляй экспедиции за наградами и запускай временное усиление фермы.</p>
+        <div id="activeOperations" class="item-grid"></div>
+      </section>
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">DAILY OPERATIONS</small><h2>Задания и награды</h2></div><span class="pill" id="missionReset">ЕЖЕДНЕВНО</span></div>
+        <p class="muted">Выполняй игровые цели, получай кредиты, опыт и исследовательские очки.</p>
+        <div id="missionList" class="item-grid"></div>
+        <div class="mission-streak" id="missionStreak"></div>
+      </section>
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">ACHIEVEMENTS</small><h2>Достижения</h2></div><span class="pill">25 ЦЕЛЕЙ</span></div>
+        <p class="muted">Выполняй игровые цели, открывай награды и развивай свою майнинг-ферму.</p>
+        <div id="achievementList" class="item-grid"></div>
+      </section>
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">GLOBAL MARKET</small><h2>Аукцион оборудования</h2></div><span class="pill">DEMO</span></div>
+        <p class="hint">Демонстрационный локальный аукцион. Реальные сделки между игроками появятся после подключения сервера.</p>
+        <div id="auctionList" class="item-grid"></div>
+      </section>
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">INVENTORY</small><h2>Инвентарь оборудования</h2></div><span class="pill" id="inventoryCount">0 шт.</span></div>
+        <p class="muted">Здесь хранится купленное оборудование. Продавай ненужные устройства за игровые кредиты.</p>
+        <div id="inventoryList" class="item-grid"></div>
+      </section>
+      <section class="panel expansion-panel">
+        <div class="section-head"><div><small class="eyebrow">COLLECTION</small><h2>Коллекция оборудования</h2></div><span class="pill" id="collectionCount">0 типов</span></div>
+        <p class="muted">Редкость присваивается приобретённым устройствам. Более редкое оборудование даёт небольшой игровой бонус к добыче.</p>
+        <div id="rarityCollection" class="item-grid"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">ТВОЙ ПРОГРЕСС</small><h2>Статистика</h2></div></div>
+        <div class="level-progress-card"><div class="level-progress-head"><b>Прогресс уровня</b><span id="levelProgressText">0 / 100 XP</span></div><div class="level-progress-track"><div id="levelProgressFill"></div></div><small id="unlockHint">Следующее открытие: ETH на 50 уровне</small></div>
+        <div class="stats stats-wide">
+          <div><small>ДОБЫТО ВСЕГО</small><b id="totalMined">0.000000</b></div>
+          <div><small>ЗА СЕССИЮ</small><b id="sessionMined">0.000000</b></div>
+          <div><small>ОПЫТ</small><b id="xp">0 / 100</b></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="section-head"><div><small class="eyebrow">PLAYER PROFILE</small><h2>Профиль майнера</h2></div></div>
+        <div class="profile-list">
+          <div><span>Имя</span><b id="playerName">Игрок</b></div>
+          <div><span>Уровень</span><b id="profileLevel">1</b></div>
+          <div><span>Всего CR добыто</span><b id="profileMined">0.000000</b></div>
+          <div><span>Куплено ферм</span><b id="profileRigs">0</b></div>
+        </div>
+        <button class="secondary-btn reset-btn" id="dailyBtn">🎁 Ежедневный бонус</button>
+        <p class="hint" id="dailyHint">Заходи каждый день и получай игровые кредиты.</p>
+        <div class="account-reset-block">
+          <div><b>Сбросить аккаунт</b><p class="hint">Удалит весь локальный игровой прогресс на этом устройстве: баланс, оборудование, уровни, RP, коллекцию и задания.</p></div>
+          <button class="danger-btn" id="resetAccountBtn" type="button">Начать заново</button>
+          <small class="hint">Действие необратимо. Если игра будет подключена к серверному аккаунту, серверный прогресс этим сбросом не затрагивается.</small>
+        </div>
+      </section>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="Основные разделы">
+    <button class="active" data-page-target="mine">⛏<small>Майнинг</small></button>
+    <button data-page-target="rigs">▦<small>Фермы</small></button>
+    <button data-page-target="upgrades">⚙<small>Улучшения</small></button>
+    <button data-page-target="friends">⇄<small>Друзья</small></button>
+    <button data-page-target="more">☰<small>Ещё</small></button>
+  </nav>
+  <div id="toast" class="toast"></div>
+</div>
+<script src="telegram-bridge.js"></script>
+<script src="cloud-sync.js"></script>
+<script src="app.js"></script>
+</body></html>
